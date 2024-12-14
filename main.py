@@ -1,14 +1,11 @@
 import os
 import time
-import playsound
+from pydub import AudioSegment
+from pydub.playback import play
 import speech_recognition as sr
-from gtts import gTTS
+from pynput.keyboard import Key, Controller
 
-def speak(text):
-    tts = gTTS(text=text, lang="en")
-    filename = "audio.mp3"
-    tts.save(filename)
-    playsound.playsound(filename)
+keyboard = Controller()
 
 def get_audio():
     recog = sr.Recognizer()
@@ -24,13 +21,19 @@ def get_audio():
             print("Exception: " + str(e))
     return said
 
-online = True
-while online:
+while True:
     text = get_audio()
-    if "Jarvis clip that" in text:
-        speak("Received")
-        #print("Received")
-    elif "Jarvis shutdown" in text or "Jarvis shut down" in text:
-        speak("Offline")
-        #print("Offline")
-        online = False
+    if "Jarvis" in text and "clip" in text:
+        sound = AudioSegment.from_file("audio/done.mp3")
+        play(sound)
+        keyboard.press(Key.ctrl)
+        keyboard.press(Key.shift)
+        keyboard.press('S')
+        keyboard.release(Key.ctrl)
+        keyboard.release(Key.shift)
+        keyboard.release('S')
+
+    elif "Jarvis" in text and "shut down" or "Jarvis" in text and "shutdown" in text:
+        sound = AudioSegment.from_file("audio/shutdown.mp3")
+        play(sound)
+        break
